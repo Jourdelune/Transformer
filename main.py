@@ -28,6 +28,8 @@ positionnal_encoder = PositionalEncoding(
 
 embed = embedding_layer(x)
 
-x = torch.zeros(((HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value)))
+x = torch.zeros(
+    ((HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value))
+)
 pos = positionnal_encoder(embed)
 print(pos)

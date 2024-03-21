@@ -4,8 +4,7 @@ import torch.nn as nn
 
 
 class PositionalEncoding(nn.Module):
-    """Layer that add the positionnal encoding
-    """
+    """Layer that add the positionnal encoding"""
 
     def __init__(self, dim_model: int, max_seq_len: int = 256):
         """A method that initializes the attributes of the PositionalEncoding class
@@ -15,16 +14,16 @@ class PositionalEncoding(nn.Module):
         :param max_seq_len: the maximum lenght of a sentence, defaults to 200
         :type max_seq_len: int, optional
         """
-        
+
         super().__init__()
 
         pe = torch.zeros((1, max_seq_len, dim_model))
         pos = torch.arange(max_seq_len).unsqueeze(1)
-        divid = 10_000**(torch.arange(0, dim_model, 2)/dim_model)
-  
-        pe[0, :, 0::2] = torch.sin(pos/divid)
-        pe[0, :, 1::2] = torch.cos(pos/divid)
-       
+        divid = 10_000 ** (torch.arange(0, dim_model, 2) / dim_model)
+
+        pe[0, :, 0::2] = torch.sin(pos / divid)
+        pe[0, :, 1::2] = torch.cos(pos / divid)
+
         self.__pe = pe
 
     def forward(self, embedding_tensor: torch.Tensor) -> torch.Tensor:
@@ -36,4 +35,4 @@ class PositionalEncoding(nn.Module):
         :rtype: torch.Tensor
         """
 
-        return embedding_tensor + self.__pe[:, :embedding_tensor.shape[1], :]
+        return embedding_tensor + self.__pe[:, : embedding_tensor.shape[1], :]
