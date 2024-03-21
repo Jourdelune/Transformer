@@ -17,8 +17,17 @@ x = torch.randint(
     (HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value),
 )
 
+
 embedding_layer = Embeddings(
     HyperParameters.VOCAB_SIZE.value, HyperParameters.DIM_MODEL.value
 )
 
-print(embedding_layer(x).shape)
+positionnal_encoder = PositionalEncoding(
+    HyperParameters.DIM_MODEL.value, HyperParameters.MAX_SEQ_LENGHT.value
+)
+
+embed = embedding_layer(x)
+
+x = torch.zeros(((HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value)))
+pos = positionnal_encoder(embed)
+print(pos)
