@@ -17,23 +17,23 @@ class PositionalEncoding(nn.Module):
 
         super().__init__()
 
-        pe = torch.zeros((max_seq_len, 1, dim_model))
+        pe = torch.zeros((1, max_seq_len, dim_model))
 
         pos = torch.arange(max_seq_len).unsqueeze(1)
         divid = 10_000 ** (torch.arange(0, dim_model, 2) / dim_model)
-
-        pe[:, 0, 0::2] = torch.sin(pos / divid)
-        pe[:, 0, 1::2] = torch.cos(pos / divid)
+      
+        pe[0, :, 0::2] = torch.sin(pos / divid)
+        pe[0, :, 1::2] = torch.cos(pos / divid)
 
         self.__pe = pe
 
     def forward(self, embedding_tensor: torch.Tensor) -> torch.Tensor:
         """Function that add to the embedding matrix the positionnal encoding
 
-        :param embedding_tensor: the embedding tensor of dim (seq length, batch_size, dim_size)
+        :param embedding_tensor: the embedding tensor of dim (batch_sizes, seq length, dim_size)
         :type embedding_tensor: torch.Tensor
         :return: the embedding tensor with pos encoding
         :rtype: torch.Tensor
         """
 
-        return embedding_tensor + self.__pe[: embedding_tensor.shape[0], :, :]
+        return embedding_tensor + self.__pe[:, : embedding_tensor.shape[1], :]

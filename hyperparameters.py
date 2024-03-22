@@ -10,3 +10,4 @@ class HyperParameters(Enum):
     DIM_MODEL: int = 512
     MAX_SEQ_LENGHT: int = 256
     BATCH_SIZE: int = 128
+    HEADS: int = 4

@@ -21,11 +21,11 @@ class Embeddings(nn.Module):
         self.__dim_model = torch.tensor(dim_model)
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        """Pass a tensors of dim (max_seq_length, batch_size) to the embedding layer
+        """Pass a tensors of dim (batch_size, max_seq_length) to the embedding layer
 
         :param inputs: the input that contains the words
         :type inputs: torch.Tensor
-        :return: an output of dim (max_seq_length, batch_size, dim_model)
+        :return: an output of dim (batch_size, max_seq_length, dim_model)
         :rtype: torch.Tensor
         """
 
