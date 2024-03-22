@@ -14,7 +14,7 @@ torch.manual_seed(1)
 x = torch.randint(
     0,
     HyperParameters.VOCAB_SIZE.value,
-    (HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value),
+    (HyperParameters.MAX_SEQ_LENGHT.value, HyperParameters.BATCH_SIZE.value),
 )
 
 
@@ -27,9 +27,4 @@ positionnal_encoder = PositionalEncoding(
 )
 
 embed = embedding_layer(x)
-
-x = torch.zeros(
-    ((HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value))
-)
-pos = positionnal_encoder(embed)
-print(pos)
+pos = positionnal_encoder(embed) # (seq length, batch size, model dim)
