@@ -36,4 +36,4 @@ class PositionalEncoding(nn.Module):
         :rtype: torch.Tensor
         """
 
-        return embedding_tensor + self.__pe[:, : embedding_tensor.shape[0], :]
+        return embedding_tensor + self.__pe[: embedding_tensor.shape[0], :, :]
