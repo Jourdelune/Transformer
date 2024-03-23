@@ -16,7 +16,7 @@ class Embeddings(nn.Module):
         :param dim_model: the dimension of a vector that will contain the feature to represent a word
         :type dim_model: int
         """
-        super(Embeddings, self).__init__()
+        super().__init__()
         self.__embeddings = nn.Embedding(vocab_size, dim_model)
         self.__dim_model = torch.tensor(dim_model)
 

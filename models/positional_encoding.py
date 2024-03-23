@@ -21,7 +21,7 @@ class PositionalEncoding(nn.Module):
 
         pos = torch.arange(max_seq_len).unsqueeze(1)
         divid = 10_000 ** (torch.arange(0, dim_model, 2) / dim_model)
-      
+
         pe[0, :, 0::2] = torch.sin(pos / divid)
         pe[0, :, 1::2] = torch.cos(pos / divid)
 

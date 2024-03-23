@@ -9,9 +9,6 @@ from hyperparameters import HyperParameters
 from utils import *
 
 
-torch.manual_seed(1)
-
-
 x = torch.randint(
     0,
     HyperParameters.VOCAB_SIZE.value,
@@ -33,4 +30,7 @@ multi_head_attention = MultiHeadAttention(
 
 embed = embedding_layer(x)*0
 x = positionnal_encoder(embed)
-multi_head_attention(x, x, x)
+
+multi = multi_head_attention(x, x, x)
+
+print(multi)
