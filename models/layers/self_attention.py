@@ -36,5 +36,5 @@ class SelfAttention(nn.Module):
         eq = torch.matmul(q, k_t)/np.sqrt(
             q.shape[-1]
         )
-
+        
         return torch.matmul(self.__softmax(eq), v)
