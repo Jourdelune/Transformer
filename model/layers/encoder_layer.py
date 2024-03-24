@@ -1,12 +1,11 @@
 import torch
-
 import torch.nn as nn
 
 from .multi_head_attention import MultiHeadAttention
 from .position_wise_feed_forward_network import PositionWiseFeedForwardNetwork
 
 
-class Encoder(nn.Module):
+class EncoderLayer(nn.Module):
     """Encoder layer of the transformer network.
     """
 
