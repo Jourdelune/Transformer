@@ -1,32 +1,45 @@
 import torch
 import torch.nn as nn
 
-from .embeddings import Embeddings
 from .encoder_layer import EncoderLayer
-from .positional_encoding import PositionalEncoding
 
 
 class Encoder(nn.Module):
+    """The stack of all the encoder layer."""
+
     def __init__(
         self,
-        vocab_size: int,
         dim_model: int,
         num_layers: int,
         num_heads: int,
         ffn_val: int,
     ) -> None:
-        super().__init__()
+        """Stack all encoders layers
 
-        self.__embedding_layer = Embeddings(vocab_size, dim_model)
-        self.__positionnal_encoder = PositionalEncoding(dim_model, vocab_size)
+        :param dim_model: the dim of the model
+        :type dim_model: int
+        :param num_layers: the number of encoder layer to stack
+        :type num_layers: int
+        :param num_heads: the number of head used in the attention layer
+        :type num_heads: int
+        :param ffn_val: the dim of the feed forward layer
+        :type ffn_val: int
+        """
+
+        super().__init__()
 
         self.__encoders = nn.ModuleList(
             [EncoderLayer(num_heads, dim_model, ffn_val) for _ in range(num_layers)]
         )
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        inputs = self.__embedding_layer(inputs) * 0
-        inputs = self.__positionnal_encoder(inputs)
+        """run a pass througth all the encoders layers
+
+        :param inputs: the inputs values
+        :type inputs: torch.Tensor
+        :return: the outputs values
+        :rtype: torch.Tensor
+        """
 
         for encoder in self.__encoders:
             inputs = encoder(inputs)
