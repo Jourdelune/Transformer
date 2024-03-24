@@ -1,8 +1,8 @@
 import torch
 
-from models.embeddings import Embeddings
-from models.multi_head_attention import MultiHeadAttention
-from models.positional_encoding import PositionalEncoding
+from models.layers.embeddings import Embeddings
+from models.layers.positional_encoding import PositionalEncoding
+from models.layers.encoder import Encoder
 from models.tokenizer import Tokenizer
 
 from hyperparameters import HyperParameters
@@ -24,13 +24,14 @@ positionnal_encoder = PositionalEncoding(
     HyperParameters.DIM_MODEL.value, HyperParameters.MAX_SEQ_LENGHT.value
 )
 
-multi_head_attention = MultiHeadAttention(
-    HyperParameters.HEADS.value, HyperParameters.DIM_MODEL.value
-)
 
 embed = embedding_layer(x)*0
 x = positionnal_encoder(embed)
 
-multi = multi_head_attention(x, x, x)
 
-print(multi)
+encoder = Encoder(
+    HyperParameters.HEADS.value, HyperParameters.DIM_MODEL.value, HyperParameters.D_FFN.value
+)
+
+a = encoder(x)
+print(a)

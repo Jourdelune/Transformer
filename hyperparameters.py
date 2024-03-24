@@ -11,3 +11,4 @@ class HyperParameters(Enum):
     MAX_SEQ_LENGHT: int = 256
     BATCH_SIZE: int = 128
     HEADS: int = 8
+    D_FFN: int = 2048

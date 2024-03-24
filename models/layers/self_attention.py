@@ -14,7 +14,7 @@ class SelfAttention(nn.Module):
         
         super().__init__()
         
-        self.__softmax = nn.Softmax(dim=-1)
+        self.__softmax = nn.Softmax(dim=-1) # calculate dim on the last dim of the input vector
     
     
     def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
