@@ -24,9 +24,11 @@ def pad_inputs(inputs: torch.Tensor, max_seq_length: int) -> torch.Tensor:
     :return: a padded matrix
     :rtype: torch.Tensor
     """
-    
-    batch_size, seq_length, dim_embed = inputs.shape
-    target = torch.zeros(batch_size, max_seq_length, dim_embed)
-    target[:, :seq_length, :] = inputs
 
-    return target
+    _, seq_length = inputs.shape
+    num_zeros = max_seq_length - seq_length
+
+    padded_inputs = torch.nn.functional.pad(
+        inputs, (0, num_zeros), mode="constant", value=0
+    )
+    return padded_inputs
