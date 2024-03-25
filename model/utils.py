@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import torch
 
 
@@ -14,15 +16,17 @@ def convert_token_to_idx(tokens: list) -> torch.tensor:
     return out_tensors
 
 
-def pad_inputs(inputs: torch.Tensor, max_seq_length: int) -> torch.Tensor:
+def pad_inputs(
+    inputs: torch.Tensor, max_seq_length: int
+) -> Tuple[torch.Tensor, torch.Tensor]:
     """Function that add padding value to match the max seq length
 
     :param inputs: the inputs tensor
     :type inputs: torch.Tensor
     :param max_seq_length: the max number of sequence
     :type max_seq_length: int
-    :return: a padded matrix
-    :rtype: torch.Tensor
+    :return: the padded input and a mask
+    :rtype: Tuple[torch.Tensor, torch.Tensor]
     """
 
     _, seq_length = inputs.shape
@@ -31,4 +35,7 @@ def pad_inputs(inputs: torch.Tensor, max_seq_length: int) -> torch.Tensor:
     padded_inputs = torch.nn.functional.pad(
         inputs, (0, num_zeros), mode="constant", value=0
     )
-    return padded_inputs
+
+    mask = padded_inputs == 0
+
+    return padded_inputs, mask

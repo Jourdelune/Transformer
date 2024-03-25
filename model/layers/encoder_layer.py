@@ -6,8 +6,7 @@ from .position_wise_feed_forward_network import PositionWiseFeedForwardNetwork
 
 
 class EncoderLayer(nn.Module):
-    """Encoder layer of the transformer network.
-    """
+    """Encoder layer of the transformer network."""
 
     def __init__(self, num_head: int, dim_model: int, d_ffn: int) -> None:
         """Construct the encoder layer
@@ -30,17 +29,21 @@ class EncoderLayer(nn.Module):
 
         self.__ffn = PositionWiseFeedForwardNetwork(dim_model, d_ffn)
 
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self, inputs: torch.Tensor, pad_mask: torch.Tensor = None
+    ) -> torch.Tensor:
         """run the encoder layer on inputs
 
         :param inputs: the inputs values
         :type inputs: torch.Tensor
+        :param pad_mask: the padding for the self attention layer
+        :type pad_mask: torch.Tensor
         :return: the outputs values
         :rtype: torch.Tensor
         """
 
         # multi head attention
-        encoder_val = self.__multi_head_attention(inputs, inputs, inputs)
+        encoder_val = self.__multi_head_attention(inputs, inputs, inputs, pad_mask)
 
         # residual connexions
         encoder_val += inputs

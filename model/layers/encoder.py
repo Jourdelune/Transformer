@@ -32,16 +32,20 @@ class Encoder(nn.Module):
             [EncoderLayer(num_heads, dim_model, ffn_val) for _ in range(num_layers)]
         )
 
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self, inputs: torch.Tensor, pad_mask: torch.Tensor = None
+    ) -> torch.Tensor:
         """run a pass througth all the encoders layers
 
         :param inputs: the inputs values
         :type inputs: torch.Tensor
+        :param pad_mask: the padding for the self attention layer
+        :type pad_mask: torch.Tensor
         :return: the outputs values
         :rtype: torch.Tensor
         """
 
         for encoder in self.__encoders:
-            inputs = encoder(inputs)
+            inputs = encoder(inputs, pad_mask)
 
         return inputs

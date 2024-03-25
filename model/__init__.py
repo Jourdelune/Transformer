@@ -4,11 +4,11 @@ import torch.nn as nn
 from .layers.embeddings import Embeddings
 from .layers.encoder import Encoder
 from .layers.positional_encoding import PositionalEncoding
+from .utils import pad_inputs
 
 
 class Transformer(nn.Module):
-    """The transformer model
-    """
+    """The transformer model"""
 
     def __init__(
         self,
@@ -17,6 +17,7 @@ class Transformer(nn.Module):
         num_layers: int,
         num_heads: int,
         ffn_val: int,
+        max_seq_length: int,
     ) -> None:
         """initialize the hyperparmeters of the transformer model
 
@@ -39,6 +40,8 @@ class Transformer(nn.Module):
         self.__embedding_layer = Embeddings(vocab_size, dim_model)
         self.__positionnal_encoder = PositionalEncoding(dim_model, vocab_size)
 
+        self.__max_seq_length = max_seq_length
+
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         """return the outputs througth the transformer model
 
@@ -47,10 +50,10 @@ class Transformer(nn.Module):
         :return: the outputs from the transformer model
         :rtype: torch.Tensor
         """
-
+        inputs, pad_mask = pad_inputs(inputs, self.__max_seq_length)
         inputs = self.__embedding_layer(inputs) * 0
         inputs = self.__positionnal_encoder(inputs)
 
-        encoder_outputs = self.__encoder(inputs)
+        encoder_outputs = self.__encoder(inputs, pad_mask=pad_mask)
 
         return encoder_outputs

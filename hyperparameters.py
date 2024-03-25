@@ -7,9 +7,9 @@ class HyperParameters(Enum):
     """
 
     VOCAB_SIZE: int = 10_000
-    DIM_MODEL: int = 512
+    DIM_MODEL: int = 512  # have to be even
     MAX_SEQ_LENGHT: int = 5
     N_LAYERS: int = 6
-    BATCH_SIZE: int = 4
+    BATCH_SIZE: int = 4  # can't be bigger than DIM_MODEL
     HEADS: int = 8
     D_FFN: int = 2048
