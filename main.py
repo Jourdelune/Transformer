@@ -21,4 +21,4 @@ x = torch.randint(
 )
 
 out = transformer(x)
-
+print(out)

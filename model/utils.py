@@ -37,5 +37,6 @@ def pad_inputs(
     )
 
     mask = padded_inputs == 0
+    mask = mask.unsqueeze(1).unsqueeze(2) # some broadcast problem without
 
     return padded_inputs, mask

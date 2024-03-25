@@ -47,5 +47,5 @@ class SelfAttention(nn.Module):
             eq = eq.masked_fill(
                 pad_mask, -1e10
             )  # ty the broadcast, don't forget to update the eq matrix lol
-    
+   
         return torch.matmul(self.__softmax(eq), v)

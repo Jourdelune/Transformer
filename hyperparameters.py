@@ -10,6 +10,6 @@ class HyperParameters(Enum):
     DIM_MODEL: int = 512  # have to be even
     MAX_SEQ_LENGHT: int = 5
     N_LAYERS: int = 6
-    BATCH_SIZE: int = 4  # can't be bigger than DIM_MODEL
-    HEADS: int = 8
+    BATCH_SIZE: int = 4  
+    HEADS: int = 8 # can't be bigger than DIM Model
     D_FFN: int = 2048
