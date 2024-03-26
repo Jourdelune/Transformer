@@ -21,4 +21,5 @@ x = torch.randint(
 )
 
 out = transformer(x)
-print(out)
+
+print(out.shape)

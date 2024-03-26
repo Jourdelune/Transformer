@@ -16,7 +16,7 @@ def convert_token_to_idx(tokens: list) -> torch.tensor:
     return out_tensors
 
 
-def pad_inputs(
+def pad_tensor(
     inputs: torch.Tensor, max_seq_length: int
 ) -> Tuple[torch.Tensor, torch.Tensor]:
     """Function that add padding value to match the max seq length
