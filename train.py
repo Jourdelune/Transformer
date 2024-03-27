@@ -5,7 +5,7 @@ from hyperparameters import HyperParameters
 from model import Transformer
 
 
-transformer = Transformer(
+model = Transformer(
     HyperParameters.VOCAB_SIZE.value,
     HyperParameters.DIM_MODEL.value,
     HyperParameters.N_LAYERS.value,
