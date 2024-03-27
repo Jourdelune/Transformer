@@ -1,11 +1,9 @@
 import torch
-
 import torch.nn as nn
 
 
 class PositionWiseFeedForwardNetwork(nn.Module):
-    """the position wise feed forward network layer from transformers
-    """
+    """the position wise feed forward network layer from transformers"""
 
     def __init__(self, dim_model: int, dim_ffn: int) -> None:
         """initialize default value

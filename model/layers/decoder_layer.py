@@ -9,7 +9,7 @@ class DecoderLayer(nn.Module):
     """The decoder layer
     """
 
-    def __init__(self, num_head: int, dim_model: int, d_ffn: int) -> None:
+    def __init__(self, num_head: int, dim_model: int, d_ffn: int, dropout_rate: int) -> None:
         """Initialize the decoder layer
 
         :param num_head: the number of head for the attention layer
@@ -30,6 +30,10 @@ class DecoderLayer(nn.Module):
         self.__layer_norm3 = nn.LayerNorm(dim_model)
 
         self.__ffn = PositionWiseFeedForwardNetwork(dim_model, d_ffn)
+
+        self.__dropout1 = nn.Dropout(dropout_rate)
+        self.__dropout2 = nn.Dropout(dropout_rate)
+        self.__dropout3 = nn.Dropout(dropout_rate)
 
     def forward(
         self,
@@ -53,16 +57,38 @@ class DecoderLayer(nn.Module):
         """
 
         tgt_attention = self.__mask_multi_head_attention(tgt, tgt, tgt, tgt_mask)
-        tgt += tgt_attention
 
-        tgt = self.__layer_norm1(tgt)
+        # dropout
+        tgt_attention = self.__dropout1(tgt_attention)
 
-        tgt_attention = self.__multi_head_attention(tgt, enc_out, enc_out, src_mask)
-        tgt += tgt_attention
+        # residual connexion
+        tgt_attention += tgt
 
-        tgt = self.__layer_norm2(tgt)
+        # layer norm
+        tgt_attention = self.__layer_norm1(tgt_attention)
 
-        tgt_ffn = self.__ffn(tgt)
-        tgt += tgt_ffn
+        # multi head attention
+        cross_tgt_attention = self.__multi_head_attention(tgt_attention, enc_out, enc_out, src_mask)
 
-        return self.__layer_norm3(tgt)
+        # dropout
+        cross_tgt_attention = self.__dropout2(cross_tgt_attention)
+
+        # residual connexion
+        tgt_attention += cross_tgt_attention
+
+        # layer norm
+        tgt_attention = self.__layer_norm2(tgt_attention)
+
+        # feed forward network
+        tgt_ffn = self.__ffn(tgt_attention)
+
+        # dropout
+        tgt_ffn = self.__dropout3(tgt_ffn)
+
+        # residual connexion
+        tgt_attention += tgt_ffn
+
+        # layer norm
+        tgt_attention = self.__layer_norm3(tgt_attention)
+
+        return tgt_attention

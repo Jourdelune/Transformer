@@ -11,8 +11,6 @@ class SelfAttention(nn.Module):
 
         super().__init__()
 
-        torch.manual_seed(0)
-
         self.__softmax = nn.Softmax(
             dim=-1
         )  # calculate dim on the last dim of the input vector
@@ -47,5 +45,5 @@ class SelfAttention(nn.Module):
             eq = eq.masked_fill(
                 pad_mask, -1e10
             )  # ty the broadcast, don't forget to update the eq matrix lol
-   
+
         return torch.matmul(self.__softmax(eq), v)

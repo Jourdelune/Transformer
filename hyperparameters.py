@@ -13,3 +13,4 @@ class HyperParameters(Enum):
     BATCH_SIZE: int = 4  
     HEADS: int = 8 # can't be bigger than DIM Model
     D_FFN: int = 2048
+    DROPOUT_RATE: int = 0.1

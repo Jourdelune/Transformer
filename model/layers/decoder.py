@@ -15,6 +15,7 @@ class Decoder(nn.Module):
         num_heads: int,
         ffn_val: int,
         vocab_size: int,
+        dropout_rate: int
     ) -> None:
         """Initialize the value for the decoder block
 
@@ -33,7 +34,7 @@ class Decoder(nn.Module):
         super().__init__()
 
         self.__decoders = nn.ModuleList(
-            [DecoderLayer(num_heads, dim_model, ffn_val) for _ in range(num_layers)]
+            [DecoderLayer(num_heads, dim_model, ffn_val, dropout_rate) for _ in range(num_layers)]
         )
 
         self.__ffn = nn.Linear(dim_model, vocab_size)

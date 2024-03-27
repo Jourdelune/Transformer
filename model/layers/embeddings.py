@@ -17,6 +17,7 @@ class Embeddings(nn.Module):
         :type dim_model: int
         """
         super().__init__()
+        
         self.__embeddings = nn.Embedding(vocab_size, dim_model)
         self.__dim_model = torch.tensor(dim_model)
 

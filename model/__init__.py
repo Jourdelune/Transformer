@@ -19,6 +19,7 @@ class Transformer(nn.Module):
         num_heads: int,
         ffn_val: int,
         max_seq_length: int,
+        dropout_rate: int,
     ) -> None:
         """initialize the hyperparmeters of the transformer model
 
@@ -36,17 +37,22 @@ class Transformer(nn.Module):
 
         super().__init__()
 
-        self.__encoder = Encoder(dim_model, num_layers, num_heads, ffn_val)
-        self.__decoder = Decoder(dim_model, num_layers, num_heads, ffn_val, vocab_size)
+        self.__encoder = Encoder(
+            dim_model, num_layers, num_heads, ffn_val, dropout_rate
+        )
+        self.__decoder = Decoder(
+            dim_model, num_layers, num_heads, ffn_val, vocab_size, dropout_rate
+        )
 
         self.__embedding_layer = Embeddings(vocab_size, dim_model)
         self.__positionnal_encoder = PositionalEncoding(dim_model, vocab_size)
 
         self.__max_seq_length = max_seq_length
 
-    def forward(
-        self, inputs: torch.Tensor, target: torch.Tensor = None
-    ) -> torch.Tensor:
+        self.__dropout1 = nn.Dropout(dropout_rate)
+        self.__dropout2 = nn.Dropout(dropout_rate)
+
+    def forward(self, inputs: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         """return the outputs througth the transformer model
 
         :param inputs: the inputs batched sentences
@@ -56,15 +62,14 @@ class Transformer(nn.Module):
         """
 
         inputs, mask_src = pad_tensor(inputs, self.__max_seq_length)
-        inputs = self.__embedding_layer(inputs) * 0
+        inputs = self.__embedding_layer(inputs)
         inputs = self.__positionnal_encoder(inputs)
-
-        if target is None:
-            target = torch.zeros(inputs.shape[:2]).to(torch.long)
+        inputs = self.__dropout1(inputs)
 
         target, mask_tgt = pad_tensor(target, self.__max_seq_length)
-        target = self.__embedding_layer(target) * 0
+        target = self.__embedding_layer(target)
         target = self.__positionnal_encoder(target)
+        target = self.__dropout2(target)
 
         encoder_outputs = self.__encoder(inputs, pad_mask=mask_src)
         decoder_outputs = self.__decoder(target, encoder_outputs, mask_src, mask_tgt)

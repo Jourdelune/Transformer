@@ -8,7 +8,9 @@ from .position_wise_feed_forward_network import PositionWiseFeedForwardNetwork
 class EncoderLayer(nn.Module):
     """Encoder layer of the transformer network."""
 
-    def __init__(self, num_head: int, dim_model: int, d_ffn: int) -> None:
+    def __init__(
+        self, num_head: int, dim_model: int, d_ffn: int, dropout_rate: int
+    ) -> None:
         """Construct the encoder layer
 
         :param num_head: the number of head of the multi head attention layer
@@ -29,6 +31,9 @@ class EncoderLayer(nn.Module):
 
         self.__ffn = PositionWiseFeedForwardNetwork(dim_model, d_ffn)
 
+        self.__dropout1 = nn.Dropout(dropout_rate)
+        self.__dropout2 = nn.Dropout(dropout_rate)
+
     def forward(
         self, inputs: torch.Tensor, pad_mask: torch.Tensor = None
     ) -> torch.Tensor:
@@ -45,6 +50,9 @@ class EncoderLayer(nn.Module):
         # multi head attention
         encoder_val = self.__multi_head_attention(inputs, inputs, inputs, pad_mask)
 
+        # regulate
+        encoder_val = self.__dropout1(encoder_val)
+
         # residual connexions
         encoder_val += inputs
 
@@ -53,6 +61,11 @@ class EncoderLayer(nn.Module):
 
         # feed forward outputs
         ffn_outputs = self.__ffn(encoder_val)
+
+        # regulate
+        encoder_val = self.__dropout2(
+            encoder_val
+        )  # can be dropout1 because there is no learning param in the dropout layer
 
         # residual connexions
         encoder_val += ffn_outputs

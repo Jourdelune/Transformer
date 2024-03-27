@@ -13,6 +13,7 @@ class Encoder(nn.Module):
         num_layers: int,
         num_heads: int,
         ffn_val: int,
+        dropout_rate: int
     ) -> None:
         """Stack all encoders layers
 
@@ -29,7 +30,7 @@ class Encoder(nn.Module):
         super().__init__()
 
         self.__encoders = nn.ModuleList(
-            [EncoderLayer(num_heads, dim_model, ffn_val) for _ in range(num_layers)]
+            [EncoderLayer(num_heads, dim_model, ffn_val, dropout_rate) for _ in range(num_layers)]
         )
 
     def forward(
