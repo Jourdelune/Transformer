@@ -21,7 +21,7 @@ class PositionWiseFeedForwardNetwork(nn.Module):
         self.__relu = nn.ReLU()
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        """run a pass over the layer
+        """Run a pass over the layer
 
         :param inputs: the input value
         :type inputs: torch.Tensor

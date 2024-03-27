@@ -11,14 +11,16 @@ class EncoderLayer(nn.Module):
     def __init__(
         self, num_head: int, dim_model: int, d_ffn: int, dropout_rate: int
     ) -> None:
-        """Construct the encoder layer
+        """initialize the encoder layer
 
-        :param num_head: the number of head of the multi head attention layer
+        :param num_head: the number of head in the multi head attention
         :type num_head: int
-        :param dim_model: the dimension of the inputs of the model
+        :param dim_model: the dimension of the model
         :type dim_model: int
-        :param d_ffn: the dimension of the feed forwar network
+        :param d_ffn: the number of neurons in the feed forward network
         :type d_ffn: int
+        :param dropout_rate: the dropout rate
+        :type dropout_rate: int
         """
 
         super().__init__()
@@ -37,13 +39,13 @@ class EncoderLayer(nn.Module):
     def forward(
         self, inputs: torch.Tensor, pad_mask: torch.Tensor = None
     ) -> torch.Tensor:
-        """run the encoder layer on inputs
+        """Run the input tensor through the encoder layer
 
-        :param inputs: the inputs values
+        :param inputs: the input tensor
         :type inputs: torch.Tensor
-        :param pad_mask: the padding for the self attention layer
-        :type pad_mask: torch.Tensor
-        :return: the outputs values
+        :param pad_mask: the padding mask tensor, defaults to None
+        :type pad_mask: torch.Tensor, optional
+        :return: the output tensor
         :rtype: torch.Tensor
         """
 

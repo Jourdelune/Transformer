@@ -17,13 +17,12 @@ transformer = Transformer(
 src_data = torch.randint(
     1,
     HyperParameters.VOCAB_SIZE.value,
-    (HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value),
+    (HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value - 2),
 )
 
 tgt_data = torch.randint(
     1,
     HyperParameters.VOCAB_SIZE.value,
-    (HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value),
+    (HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value - 2),
 )
 out = transformer(src_data, tgt_data)
-print(out)

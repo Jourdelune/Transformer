@@ -1,12 +1,11 @@
 import torch
 import torch.nn as nn
 
-from .decoder_layer import DecoderLayer
+from ..layers.decoder_layer import DecoderLayer
 
 
 class Decoder(nn.Module):
-    """the decoder block
-    """
+    """the decoder block"""
 
     def __init__(
         self,
@@ -15,26 +14,31 @@ class Decoder(nn.Module):
         num_heads: int,
         ffn_val: int,
         vocab_size: int,
-        dropout_rate: int
+        dropout_rate: int,
     ) -> None:
-        """Initialize the value for the decoder block
+        """initialize the decoder block
 
-        :param dim_model: the dim of the word
+        :param dim_model: the dimension of the model
         :type dim_model: int
-        :param num_layers: the number of decoder layer
+        :param num_layers: the number of layers
         :type num_layers: int
-        :param num_heads: the number of head for the self attention layer
+        :param num_heads: the number of heads
         :type num_heads: int
-        :param ffn_val: the number of dim of the feed forward network
+        :param ffn_val: the number of neurons in the feed forward network
         :type ffn_val: int
-        :param vocab_size: the size of the vocab
+        :param vocab_size: the size of the vocabulary
         :type vocab_size: int
+        :param dropout_rate: the dropout rate
+        :type dropout_rate: int
         """
 
         super().__init__()
 
         self.__decoders = nn.ModuleList(
-            [DecoderLayer(num_heads, dim_model, ffn_val, dropout_rate) for _ in range(num_layers)]
+            [
+                DecoderLayer(num_heads, dim_model, ffn_val, dropout_rate)
+                for _ in range(num_layers)
+            ]
         )
 
         self.__ffn = nn.Linear(dim_model, vocab_size)
@@ -47,17 +51,17 @@ class Decoder(nn.Module):
         src_mask: torch.Tensor = None,
         tgt_mask: torch.Tensor = None,
     ) -> torch.Tensor:
-        """run a pass through the decoder block 
+        """Run the input tensor through the decoder layers
 
-        :param tgt: the current decoder output
+        :param tgt: the input tensor
         :type tgt: torch.Tensor
-        :param enc_out: the encoder output
+        :param enc_out: the output of the encoder
         :type enc_out: torch.Tensor
-        :param src_mask: the source mask of the input sentence that went through the encoder block, defaults to None
+        :param src_mask: the mask where 0 is padding and 1 is not padding, defaults to None
         :type src_mask: torch.Tensor, optional
-        :param tgt_mask: the target mask (current prediction of the model), defaults to None
+        :param tgt_mask: the look ahead mask where 0 is padding and 1 is not padding, defaults to None
         :type tgt_mask: torch.Tensor, optional
-        :return: a output that for each position in the sequence return the probability of each word.
+        :return: the output tensor
         :rtype: torch.Tensor
         """
 

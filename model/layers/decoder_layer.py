@@ -42,17 +42,17 @@ class DecoderLayer(nn.Module):
         src_mask: torch.Tensor = None,
         tgt_mask: torch.Tensor = None,
     ) -> torch.Tensor:
-        """run a pass throught the layer
+        """Run the input tensor through the decoder layer
 
-        :param tgt: the current prediction of the model
+        :param tgt: the target tensor (current output of the decoder)
         :type tgt: torch.Tensor
-        :param enc_out: the encoder output
+        :param enc_out: the output of the encoder
         :type enc_out: torch.Tensor
-        :param src_mask: the source mask of the input pass througth the encoder layer, defaults to None
+        :param src_mask: the mask for the source tensor, defaults to None
         :type src_mask: torch.Tensor, optional
-        :param tgt_mask: the target mask to make prediction not based on next word, defaults to None
+        :param tgt_mask: the mask for the target tensor, defaults to None
         :type tgt_mask: torch.Tensor, optional
-        :return: the attention output of dim (batch size, max seq length, word dim)
+        :return: the output tensor
         :rtype: torch.Tensor
         """
 
