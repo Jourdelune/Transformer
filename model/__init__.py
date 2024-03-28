@@ -3,9 +3,9 @@ from typing import Tuple
 import torch
 import torch.nn as nn
 
-from .block.decoder import Decoder
+from .blocks.decoder import Decoder
 from .layers.embeddings import Embeddings
-from .block.encoder import Encoder
+from .blocks.encoder import Encoder
 from .layers.positional_encoding import PositionalEncoding
 from .utils import pad_tensor
 

@@ -3,7 +3,7 @@ import torch
 from hyperparameters import HyperParameters
 from model import Transformer
 
-transformer = Transformer(
+model = Transformer(
     HyperParameters.VOCAB_SIZE.value,
     HyperParameters.DIM_MODEL.value,
     HyperParameters.N_LAYERS.value,
@@ -25,4 +25,5 @@ tgt_data = torch.randint(
     HyperParameters.VOCAB_SIZE.value,
     (HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value - 2),
 )
-out = transformer(src_data, tgt_data)
+out = model(src_data, tgt_data)
+print(out.shape)
