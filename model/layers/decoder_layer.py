@@ -6,10 +6,11 @@ from .position_wise_feed_forward_network import PositionWiseFeedForwardNetwork
 
 
 class DecoderLayer(nn.Module):
-    """The decoder layer
-    """
+    """The decoder layer"""
 
-    def __init__(self, num_head: int, dim_model: int, d_ffn: int, dropout_rate: int) -> None:
+    def __init__(
+        self, num_head: int, dim_model: int, d_ffn: int, dropout_rate: int
+    ) -> None:
         """Initialize the decoder layer
 
         :param num_head: the number of head for the attention layer
@@ -23,7 +24,9 @@ class DecoderLayer(nn.Module):
         super().__init__()
 
         self.__mask_multi_head_attention = MultiHeadAttention(num_head, dim_model)
-        self.__multi_head_attention = MultiHeadAttention(num_head, dim_model) # also called cross attention
+        self.__multi_head_attention = MultiHeadAttention(
+            num_head, dim_model
+        )  # also called cross attention
 
         self.__layer_norm1 = nn.LayerNorm(dim_model)
         self.__layer_norm2 = nn.LayerNorm(dim_model)
@@ -56,6 +59,8 @@ class DecoderLayer(nn.Module):
         :rtype: torch.Tensor
         """
 
+        # TODO: understand RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation
+
         tgt_attention = self.__mask_multi_head_attention(tgt, tgt, tgt, tgt_mask)
 
         # dropout
@@ -68,7 +73,9 @@ class DecoderLayer(nn.Module):
         tgt_attention = self.__layer_norm1(tgt_attention)
 
         # multi head attention
-        cross_tgt_attention = self.__multi_head_attention(tgt_attention, enc_out, enc_out, src_mask)
+        cross_tgt_attention = self.__multi_head_attention(
+            tgt_attention.clone(), enc_out, enc_out, src_mask
+        )
 
         # dropout
         cross_tgt_attention = self.__dropout2(cross_tgt_attention)
@@ -80,7 +87,7 @@ class DecoderLayer(nn.Module):
         tgt_attention = self.__layer_norm2(tgt_attention)
 
         # feed forward network
-        tgt_ffn = self.__ffn(tgt_attention)
+        tgt_ffn = self.__ffn(tgt_attention.clone())
 
         # dropout
         tgt_ffn = self.__dropout3(tgt_ffn)
