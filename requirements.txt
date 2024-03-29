@@ -1,6 +1,6 @@
 torch
 numpy
-sentencepiece
+pyonmttok
 torchtext
 torchdata
 portalocker
