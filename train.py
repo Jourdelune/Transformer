@@ -68,3 +68,5 @@ for epoch in range(EPOCHS):
         steps += 1
 
         print(f"Epoch {epoch + 1}/{EPOCHS} - Step {steps} - Loss {loss.item()}")
+
+    torch.save(model.state_dict(), 'weights/model_weights')
