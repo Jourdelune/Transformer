@@ -4,8 +4,8 @@ import torch
 import torch.nn as nn
 
 from .blocks.decoder import Decoder
-from .layers.embeddings import Embeddings
 from .blocks.encoder import Encoder
+from .layers.embeddings import Embeddings
 from .layers.positional_encoding import PositionalEncoding
 from .utils import pad_tensor
 
@@ -22,6 +22,7 @@ class Transformer(nn.Module):
         ffn_val: int,
         max_seq_length: int,
         dropout_rate: int,
+        device: str = "cpu",
     ) -> None:
         """Initialize the transformer model
 
@@ -39,6 +40,8 @@ class Transformer(nn.Module):
         :type max_seq_length: int
         :param dropout_rate: the dropout rate
         :type dropout_rate: int
+        :param device: the device to use, defaults to "cpu"
+        :type device: str, optional
         """
 
         super().__init__()
@@ -51,16 +54,19 @@ class Transformer(nn.Module):
         )
 
         self.__embedding_layer = Embeddings(vocab_size, dim_model)
-        self.__positionnal_encoder = PositionalEncoding(dim_model, vocab_size)
+        self.__positionnal_encoder = PositionalEncoding(
+            dim_model, vocab_size, device)
 
         self.__max_seq_length = max_seq_length
 
         self.__dropout1 = nn.Dropout(dropout_rate)
         self.__dropout2 = nn.Dropout(dropout_rate)
 
+        self.__device = device
+
     @staticmethod
     def __generate_mask(
-        src: torch.Tensor, tgt: torch.Tensor
+        src: torch.Tensor, tgt: torch.Tensor, device: str = "cpu"
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """Function to generate source mask and look ahead mask
 
@@ -68,6 +74,8 @@ class Transformer(nn.Module):
         :type src: torch.Tensor
         :param tgt: the target padded sentence
         :type tgt: torch.Tensor
+        :param device: the device to use, defaults to "cpu"
+        :type device: str, optional
         :return: a tuple that contain the source and the target sentences mask
         :rtype: tuple
         """
@@ -78,7 +86,7 @@ class Transformer(nn.Module):
         seq_length = tgt.size(1)
         nopeak_mask = torch.triu(
             torch.ones(1, seq_length, seq_length), diagonal=1
-        ).bool()
+        ).to(device).bool()
 
         tgt_mask = tgt_mask | nopeak_mask
 
@@ -95,10 +103,11 @@ class Transformer(nn.Module):
         :rtype: torch.Tensor
         """
 
-        source = pad_tensor(source, self.__max_seq_length)
-        target = pad_tensor(target, self.__max_seq_length)
+        source = pad_tensor(source.to(self.__device), self.__max_seq_length)
+        target = pad_tensor(target.to(self.__device), self.__max_seq_length)
 
-        mask_src, mask_tgt = self.__generate_mask(source, target)
+        mask_src, mask_tgt = self.__generate_mask(
+            source, target, self.__device)
 
         source = self.__embedding_layer(source)
         source = self.__positionnal_encoder(source)
@@ -109,6 +118,7 @@ class Transformer(nn.Module):
         target = self.__dropout2(target)
 
         encoder_outputs = self.__encoder(source, pad_mask=mask_src)
-        decoder_outputs = self.__decoder(target, encoder_outputs, mask_src, mask_tgt)
+        decoder_outputs = self.__decoder(
+            target, encoder_outputs, mask_src, mask_tgt)
 
         return decoder_outputs

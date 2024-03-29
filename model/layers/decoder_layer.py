@@ -59,43 +59,35 @@ class DecoderLayer(nn.Module):
         :rtype: torch.Tensor
         """
 
-        # TODO: understand RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation
-
         tgt_attention = self.__mask_multi_head_attention(tgt, tgt, tgt, tgt_mask)
 
         # dropout
         tgt_attention = self.__dropout1(tgt_attention)
 
-        # residual connexion
-        tgt_attention += tgt
-
-        # layer norm
-        tgt_attention = self.__layer_norm1(tgt_attention)
+        # residual connexion & layer norm
+        tgt_attention = self.__layer_norm1(tgt_attention + tgt)
 
         # multi head attention
         cross_tgt_attention = self.__multi_head_attention(
-            tgt_attention.clone(), enc_out, enc_out, src_mask
+            tgt_attention, enc_out, enc_out, src_mask
         )
 
         # dropout
         cross_tgt_attention = self.__dropout2(cross_tgt_attention)
 
         # residual connexion
-        tgt_attention += cross_tgt_attention
+        cross_tgt_attention += tgt_attention
 
         # layer norm
         tgt_attention = self.__layer_norm2(tgt_attention)
 
         # feed forward network
-        tgt_ffn = self.__ffn(tgt_attention.clone())
+        tgt_ffn = self.__ffn(tgt_attention)
 
         # dropout
         tgt_ffn = self.__dropout3(tgt_ffn)
 
-        # residual connexion
-        tgt_attention += tgt_ffn
-
-        # layer norm
-        tgt_attention = self.__layer_norm3(tgt_attention)
+        # residual connexion & layer norm
+        tgt_attention = self.__layer_norm3(tgt_ffn + tgt_attention)
 
         return tgt_attention

@@ -25,5 +25,6 @@ tgt_data = torch.randint(
     HyperParameters.VOCAB_SIZE.value,
     (HyperParameters.BATCH_SIZE.value, HyperParameters.MAX_SEQ_LENGHT.value - 2),
 )
+
 out = model(src_data, tgt_data)
 print(out.shape)
