@@ -59,35 +59,31 @@ class DecoderLayer(nn.Module):
         :rtype: torch.Tensor
         """
 
-        tgt_attention = self.__mask_multi_head_attention(tgt, tgt, tgt, tgt_mask)
+        __tgt = tgt
+        out = self.__mask_multi_head_attention(tgt, tgt, tgt, tgt_mask)
 
-        # dropout
-        tgt_attention = self.__dropout1(tgt_attention)
+        # dropout & layer norm
+        out = self.__dropout1(out)
+        out = self.__layer_norm1(out + __tgt)
 
-        # residual connexion & layer norm
-        tgt_attention = self.__layer_norm1(tgt_attention + tgt)
-
-        # multi head attention
-        cross_tgt_attention = self.__multi_head_attention(
-            tgt_attention, enc_out, enc_out, src_mask
+        __out = out
+    
+        out = self.__multi_head_attention(
+            out, enc_out, enc_out, src_mask
         )
 
         # dropout
-        cross_tgt_attention = self.__dropout2(cross_tgt_attention)
-
-        # residual connexion
-        cross_tgt_attention += tgt_attention
-
-        # layer norm
-        tgt_attention = self.__layer_norm2(tgt_attention)
-
-        # feed forward network
-        tgt_ffn = self.__ffn(tgt_attention)
-
-        # dropout
-        tgt_ffn = self.__dropout3(tgt_ffn)
+        out = self.__dropout2(out)
 
         # residual connexion & layer norm
-        tgt_attention = self.__layer_norm3(tgt_ffn + tgt_attention)
+        out = self.__layer_norm2(out + __out)
+        __out = out
+        
+        # feed forward network
+        out = self.__ffn(out)
 
-        return tgt_attention
+        # dropout & residual connexion & layer norm
+        out = self.__dropout3(out)
+        out = self.__layer_norm3(out + __out)
+
+        return out
