@@ -1,15 +1,24 @@
+import torch
 
-from torchtext.datasets import Multi30k
+src = torch.tensor([2,    35, 12474,     4,  5438,     5,  2461,    29,  1154,     6,
+                    192,    50,   151,   248,     3,     1,     1,     1,     1,     1,
+                    1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+                    1,     1,     1,     1,     1,     1,     1,     1,     1,     1],
+                   )
 
-from tokenizer import Tokenizer
+tgt = torch.tensor([2,     9, 12983,     4, 20848,    32,  1261,     7,  1507,     6,
+                    0,     3,     1,     1,     1,     1,     1,     1,     1,     1,
+                    1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+                    1,     1,     1,     1,     1,     1,     1,     1,     1,     1],
+                   )
 
-dataset = Multi30k(split='train')
-tok = Tokenizer('de_core_news_sm', 'en_core_web_sm', dataset)
+src_mask = torch.tensor([[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]])
 
-for src, tgt in dataset:
-    src = tok.string_to_vocab(src, True)
-    print(src)
-
-    src = tok.vocab_to_string(src, True)
-    print(src)
-    break
+tgt_mask = torch.tensor([[[1, 0, 0,  ..., 0, 0, 0],
+                          [1, 1, 0,  ..., 0, 0, 0],
+                          [1, 1, 1,  ..., 0, 0, 0],
+                          ...,
+                          [1, 1, 1,  ..., 0, 0, 0],
+                          [1, 1, 1,  ..., 0, 0, 0],
+                          [1, 1, 1,  ..., 0, 0, 0]]])

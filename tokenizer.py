@@ -1,40 +1,47 @@
-from typing import List, Iterator
+from typing import Iterator, List
 
 import torch
+import torchtext
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-import torchtext    
+
 
 class Tokenizer:
     """Tokenizer class for tokenizing and detokenizing text data.
     """
-    
+
     special_symbols = ['<unk>', '<pad>', '<bos>', '<eos>']
 
-    def __init__(self, src_model: str, tgt_model: str, dataset: torchtext.datasets) -> None:
+    def __init__(self, src_model: str, tgt_model: str, vocab_size: int, dataset: torchtext.datasets) -> None:
         """Constructor for Tokenizer class.
 
         :param src_model: the name of the source language model
         :type src_model: str
         :param tgt_model: the name of the target language model
         :type tgt_model: str
+        :param dataset: the vocab size
+        :type dataset: int
         :param dataset: the dataset to build the vocabulary from
         :type dataset: torchtext.datasets
         :return: None
         """
-        
+
         self.__src = get_tokenizer('spacy', language=src_model)
         self.__tgt = get_tokenizer('spacy', language=tgt_model)
 
         self.__vocab_src = build_vocab_from_iterator(self.__yield_tokens(dataset),
                                                      min_freq=1,
                                                      specials=self.special_symbols,
-                                                     special_first=True)
+                                                     special_first=True,
+                                                     max_tokens=vocab_size
+                                                     )
 
         self.__vocab_tgt = build_vocab_from_iterator(self.__yield_tokens(dataset, src=False),
                                                      min_freq=1,
                                                      specials=self.special_symbols,
-                                                     special_first=True)
+                                                     special_first=True,
+                                                     max_tokens=vocab_size
+                                                     )
         self.__vocab_src.set_default_index(0)
         self.__vocab_tgt.set_default_index(0)
 
@@ -48,7 +55,7 @@ class Tokenizer:
         :yield: the tokens from the dataset
         :rtype: Iterator
         """
-        
+
         for data_sample in data_iter:
             if src:
                 yield self.tokenize(data_sample[0], src)
@@ -65,7 +72,7 @@ class Tokenizer:
         :return: the tokenized text data
         :rtype: str
         """
-        
+
         if src:
             return self.__src(text)
 
@@ -79,8 +86,8 @@ class Tokenizer:
         :return: the detokenized text data
         :rtype: str
         """
-        
-        return ' '.join(tokens[1:-1])
+
+        return ' '.join(tokens)
 
     def string_to_vocab(self, text: str, src: bool = True) -> torch.Tensor:
         """Function to convert text data to vocabulary.
@@ -92,7 +99,7 @@ class Tokenizer:
         :return: the vocabulary representation of the text data
         :rtype: torch.Tensor
         """
-        
+
         if not src:
             tokens = self.tokenize(text, src)
 
@@ -120,7 +127,7 @@ class Tokenizer:
         :return: the text data representation of the vocabulary
         :rtype: str
         """
-        
+
         if not src:
             return self.detokenize(
                 self.__vocab_tgt.lookup_tokens(vocab.tolist())
