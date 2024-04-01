@@ -47,7 +47,8 @@ tok = Tokenizer(
 model = Transformer(
     HyperParameters.VOCAB_SIZE.value,
     HyperParameters.DIM_MODEL.value,
-    HyperParameters.MAX_SEQ_LENGHT.value
+    HyperParameters.MAX_SEQ_LENGHT.value,
+    HyperParameters.DROPOUT_RATE.value
 )
 
 for src, tgt in train_dataloader:

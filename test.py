@@ -25,11 +25,14 @@ tgt_mask = torch.tensor([[[1, 0, 0,  ..., 0, 0, 0],
                           [1, 1, 1,  ..., 0, 0, 0],
                           [1, 1, 1,  ..., 0, 0, 0]]]) """
 
+torch.manual_seed(0)
+
 model = Transformer(
-    25_000,
+    20_000,
     512,
-    40
+    40,
+    0.3
 )
 
-out = model(src, tgt)
-print(out.shape)
+out = model(src, src)
+print(out)

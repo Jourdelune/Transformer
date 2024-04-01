@@ -12,11 +12,14 @@ class Transformer(nn.Module):
     The Transformer Model
     """
 
-    def __init__(self, vocab_size: int, dim_model: int, max_seq_len: int) -> None:
+    def __init__(
+        self, vocab_size: int, dim_model: int, max_seq_len: int, dropout_rate: int
+    ) -> None:
         super().__init__()
 
         self.__embeddings = Embeddings(vocab_size, dim_model)
         self.__pos_encoding = PositionalEncoding(dim_model, max_seq_len)
+        self.__dropout = nn.Dropout(dropout_rate)
 
     @staticmethod
     def __generate_mask(
@@ -56,6 +59,9 @@ class Transformer(nn.Module):
         src_mask, tgt_mask = self.__generate_mask(src, tgt)
 
         src = self.__pos_encoding(self.__embeddings(src))
+        src = self.__dropout(src)
+
         tgt = self.__pos_encoding(self.__embeddings(tgt))
+        tgt = self.__dropout(tgt)
 
         return src
