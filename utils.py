@@ -16,7 +16,7 @@ def pad_tensor(tensor: torch.Tensor, max_seq_length: int, pad_token: int) -> tor
     
     return torch.cat(
         (
-            tensor,
+            tensor[:max_seq_length],
             torch.tensor([pad_token] * (max_seq_length - tensor.shape[0]), dtype=torch.int64)
         )
     )
