@@ -3,6 +3,7 @@ from typing import Tuple
 import torch
 import torch.nn as nn
 
+from .blocks.encoder import Encoder
 from .layers.embedings import Embeddings
 from .layers.positional_encoding import PositionalEncoding
 
@@ -13,13 +14,25 @@ class Transformer(nn.Module):
     """
 
     def __init__(
-        self, vocab_size: int, dim_model: int, max_seq_len: int, dropout_rate: int
+        self,
+        vocab_size: int,
+        dim_model: int,
+        max_seq_len: int,
+        dropout_rate: int,
+        num_layers: int,
+        num_heads: int,
+        ffn_val: int,
     ) -> None:
         super().__init__()
 
         self.__embeddings = Embeddings(vocab_size, dim_model)
+      
         self.__pos_encoding = PositionalEncoding(dim_model, max_seq_len)
         self.__dropout = nn.Dropout(dropout_rate)
+
+        self.__encoder = Encoder(
+            dim_model, num_layers, num_heads, ffn_val, dropout_rate
+        )
 
     @staticmethod
     def __generate_mask(
@@ -57,11 +70,13 @@ class Transformer(nn.Module):
 
     def forward(self, src: torch.Tensor, tgt: torch.Tensor) -> torch.Tensor:
         src_mask, tgt_mask = self.__generate_mask(src, tgt)
-
+    
         src = self.__pos_encoding(self.__embeddings(src))
         src = self.__dropout(src)
 
-        tgt = self.__pos_encoding(self.__embeddings(tgt))
-        tgt = self.__dropout(tgt)
+        encoder_out = self.__encoder(src, src_mask)
 
-        return src
+        # tgt = self.__pos_encoding(self.__embeddings(tgt))
+        # tgt = self.__dropout(tgt)
+
+        return encoder_out

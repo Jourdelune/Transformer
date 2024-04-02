@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from ..layers.encoder_layer import EncoderLayer
+
 
 class Encoder(nn.Module):
     """The encoder block"""
@@ -29,6 +31,13 @@ class Encoder(nn.Module):
 
         super().__init__()
 
+        self.__encoders = nn.ModuleList(
+            [
+                EncoderLayer(num_heads, dim_model, ffn_val, dropout_rate)
+                for _ in range(num_layers)
+            ]
+        )
+
     def forward(
         self, src: torch.Tensor, src_mask: torch.Tensor = None
     ) -> torch.Tensor:
@@ -41,5 +50,8 @@ class Encoder(nn.Module):
         :return: the predictions of the encoder block
         :rtype: torch.Tensor
         """
+
+        for encoder in self.__encoders:
+            src = encoder(src, src_mask)
 
         return src

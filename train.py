@@ -48,13 +48,16 @@ model = Transformer(
     HyperParameters.VOCAB_SIZE.value,
     HyperParameters.DIM_MODEL.value,
     HyperParameters.MAX_SEQ_LENGHT.value,
-    HyperParameters.DROPOUT_RATE.value
+    HyperParameters.DROPOUT_RATE.value,
+    HyperParameters.N_LAYERS.value,
+    HyperParameters.HEADS.value,
+    HyperParameters.D_FFN.value,
 )
 
 for src, tgt in train_dataloader:
     # print(tok.vocab_to_string(src[0,], src=True))
     # print(tok.vocab_to_string(tgt[0,], src=False))
-    
+
     out = model(src, tgt)
     print(out[0][0])
     break
