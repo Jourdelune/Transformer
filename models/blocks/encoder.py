@@ -53,5 +53,5 @@ class Encoder(nn.Module):
 
         for encoder in self.__encoders:
             src = encoder(src, src_mask)
-
+   
         return src

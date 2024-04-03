@@ -26,11 +26,11 @@ class EncoderLayer(nn.Module):
         super().__init__()
 
         self.__multi_head_attention = MultiHeadAttention(num_head, dim_model)
-
+       
         # two different layer because there are learnable parameters
         self.__layer_norm1 = nn.LayerNorm(dim_model)
         self.__layer_norm2 = nn.LayerNorm(dim_model)
-
+      
         self.__ffn = PositionWiseFeedForwardNetwork(dim_model, d_ffn)
 
         self.__dropout1 = nn.Dropout(dropout_rate)
@@ -51,16 +51,16 @@ class EncoderLayer(nn.Module):
         
         # multi head attention
         encoder_val = self.__multi_head_attention(inputs, inputs, inputs, pad_mask)
-
+        
         # regulate
         encoder_val = self.__dropout1(encoder_val)
-
-        # residual connexions
+        
+        # residual connexion
         encoder_val += inputs
 
         # normalization over dim
         encoder_val = self.__layer_norm1(encoder_val)
-
+        
         # feed forward outputs
         ffn_outputs = self.__ffn(encoder_val)
 

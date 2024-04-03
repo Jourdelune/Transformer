@@ -38,12 +38,12 @@ class SelfAttention(nn.Module):
 
         # (batch_size, num_head, seq_length, dk) to (batch_size, num_head, dk, seq_length)
         k_t = k.transpose(2, 3)
-
+        
         eq = torch.matmul(q, k_t) / np.sqrt(q.shape[-1])
-
+       
         if pad_mask is not None:
             eq = eq.masked_fill(
-                pad_mask, -1e10
+                pad_mask, -1e9
             )  # ty the broadcast, don't forget to update the eq matrix lol
-
+        
         return torch.matmul(self.__softmax(eq), v)

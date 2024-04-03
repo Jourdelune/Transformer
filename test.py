@@ -2,6 +2,9 @@ import torch
 
 from models import Transformer
 from models.layers.self_attention import SelfAttention
+from models.layers.multi_head_attention import MultiHeadAttention
+from models.layers.encoder_layer import EncoderLayer
+from models.blocks.encoder import Encoder
 
 src = torch.tensor([[2,    35, 12474,     4,  5438,     5,  2461,    29,  1154,     6,
                     192,    50,   151,   248,     3,     1,     1,     1,     1,     1,
@@ -16,7 +19,8 @@ tgt = torch.tensor([[2,     9, 12983,     4, 20848,    32,  1261,     7,  1507, 
                    ])
 
 src_mask = torch.tensor([[[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]])
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]])
+src_mask = (src_mask == 0)
 
 src_enc = torch.src = torch.tensor([[[ 0.0202,  1.0201,  0.0276,  1.0342,  0.0347,  0.9632],
          [ 0.8599,  0.5529,  0.0563,  1.0290, -0.0094,  1.0237],
@@ -83,5 +87,9 @@ model.eval()
 
 # out = model(src, src_mask)
 
-test = SelfAttention()
-print(test(src_enc, src_enc, src_enc))
+# test = MultiHeadAttention(6, 6)
+# out = test(src_enc, src_enc, src_enc, src_mask)
+
+test = Encoder(6, 6, 6, 2048, 0)
+out = test(src_enc, src_mask)
+print(out)

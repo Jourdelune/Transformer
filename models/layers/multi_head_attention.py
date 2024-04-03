@@ -23,11 +23,12 @@ class MultiHeadAttention(nn.Module):
         self.__dk = self.__dv = dim_model // num_head
         self.__num_head = num_head
 
-        self.__WQ = nn.Linear(dim_model, dim_model)
-        self.__WK = nn.Linear(dim_model, dim_model)
-        self.__WV = nn.Linear(dim_model, dim_model)
+        # no bias because the paper say they use a linear projection
+        self.__WQ = nn.Linear(dim_model, dim_model, bias=False)
+        self.__WK = nn.Linear(dim_model, dim_model, bias=False)
+        self.__WV = nn.Linear(dim_model, dim_model, bias=False)
 
-        self.__W0 = nn.Linear(dim_model, dim_model)
+        self.__W0 = nn.Linear(dim_model, dim_model, bias=False)
 
         self.__attention = SelfAttention()
 
@@ -51,27 +52,28 @@ class MultiHeadAttention(nn.Module):
         :return: the output of the calculated attention.
         :rtype: torch.Tensor
         """
-
+    
         # calculate QW^q, QW^k, QW^v
         q = self.__WQ(q)
         k = self.__WK(k)
         v = self.__WV(v)
-
+       
         old_shape = q.shape
 
         # reshape from (batch_size, seq_length, dim_model) to (batch_size, num_head, seq_length, dk) to get QW1, QW2 .. Qwhead
         q = q.reshape(q.shape[0], q.shape[1], self.__num_head, self.__dk).transpose(
             1, 2
         )
+
         k = k.reshape(k.shape[0], k.shape[1], self.__num_head, self.__dk).transpose(
             1, 2
         )
         v = v.reshape(v.shape[0], v.shape[1], self.__num_head, self.__dv).transpose(
             1, 2
         )
-
+        
         attention_values = self.__attention(q, k, v, pad_mask)
-
+        
         # concat all layer to return to (batch_size, seq_length, dim_model)
         attention_values = attention_values.transpose(1, 2).reshape(old_shape)
 
