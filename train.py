@@ -1,6 +1,7 @@
 from typing import Tuple
 
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchtext.datasets import Multi30k
 
@@ -44,6 +45,12 @@ train_dataloader = DataLoader(
 tok = Tokenizer(
     "de_core_news_sm", "en_core_web_sm", HyperParameters.VOCAB_SIZE.value, data
 )
+
+device = "cpu"
+if torch.cuda.is_available():
+    device = "cuda"
+
+
 model = Transformer(
     HyperParameters.VOCAB_SIZE.value,
     HyperParameters.DIM_MODEL.value,
@@ -52,12 +59,38 @@ model = Transformer(
     HyperParameters.N_LAYERS.value,
     HyperParameters.HEADS.value,
     HyperParameters.D_FFN.value,
-)
+    device
+).to(device)
 
-for src, tgt in train_dataloader:
-    # print(tok.vocab_to_string(src[0,], src=True))
-    # print(tok.vocab_to_string(tgt[0,], src=False))
+for p in model.parameters():
+    if p.dim() > 1 and True is False:
+        nn.init.xavier_uniform_(p)
 
-    out = model(src, tgt)
-    print(out[0][0])
-    break
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9, 0.98), eps=1e-9)
+loss_fn = nn.CrossEntropyLoss(ignore_index=1, label_smoothing=0.1).to(device)
+torch.set_printoptions(profile="full")
+for epoch in range(10):
+        torch.cuda.empty_cache()
+        model.train()
+
+        steps = 0
+        for src, tgt in train_dataloader:
+            src = src.to(device)
+            tgt = tgt.to(device)
+
+            proj_output = model(src, tgt)
+           
+            # Compute the loss using a simple cross entropy
+            loss = loss_fn(proj_output.view(-1, proj_output.shape[-1]), tgt.view(-1))
+            
+            # Backpropagate the loss
+            loss.backward()
+
+            # Update the weights
+            optimizer.step()
+            optimizer.zero_grad(set_to_none=True)
+
+            steps += 1
+
+            print(
+                f"Epoch {epoch + 1}/{HyperParameters.EPOCH_NB.value} - Step {steps} - Loss {loss.item()}")

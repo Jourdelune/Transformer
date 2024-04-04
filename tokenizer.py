@@ -7,12 +7,17 @@ from torchtext.vocab import build_vocab_from_iterator
 
 
 class Tokenizer:
-    """Tokenizer class for tokenizing and detokenizing text data.
-    """
+    """Tokenizer class for tokenizing and detokenizing text data."""
 
-    special_symbols = ['<unk>', '<pad>', '<bos>', '<eos>']
+    special_symbols = ["<unk>", "<pad>", "<bos>", "<eos>"]
 
-    def __init__(self, src_model: str, tgt_model: str, vocab_size: int, dataset: torchtext.datasets) -> None:
+    def __init__(
+        self,
+        src_model: str,
+        tgt_model: str,
+        vocab_size: int,
+        dataset: torchtext.datasets,
+    ) -> None:
         """Constructor for Tokenizer class.
 
         :param src_model: the name of the source language model
@@ -26,26 +31,31 @@ class Tokenizer:
         :return: None
         """
 
-        self.__src = get_tokenizer('spacy', language=src_model)
-        self.__tgt = get_tokenizer('spacy', language=tgt_model)
+        self.__src = get_tokenizer("spacy", language=src_model)
+        self.__tgt = get_tokenizer("spacy", language=tgt_model)
 
-        self.__vocab_src = build_vocab_from_iterator(self.__yield_tokens(dataset),
-                                                     min_freq=1,
-                                                     specials=self.special_symbols,
-                                                     special_first=True,
-                                                     max_tokens=vocab_size
-                                                     )
+        self.__vocab_src = build_vocab_from_iterator(
+            self.__yield_tokens(dataset),
+            min_freq=1,
+            specials=self.special_symbols,
+            special_first=True,
+            max_tokens=vocab_size,
+        )
 
-        self.__vocab_tgt = build_vocab_from_iterator(self.__yield_tokens(dataset, src=False),
-                                                     min_freq=1,
-                                                     specials=self.special_symbols,
-                                                     special_first=True,
-                                                     max_tokens=vocab_size
-                                                     )
+        self.__vocab_tgt = build_vocab_from_iterator(
+            self.__yield_tokens(dataset, src=False),
+            min_freq=1,
+            specials=self.special_symbols,
+            special_first=True,
+            max_tokens=vocab_size,
+        )
+        
         self.__vocab_src.set_default_index(0)
         self.__vocab_tgt.set_default_index(0)
 
-    def __yield_tokens(self, data_iter: torchtext.datasets, src: bool = True) -> Iterator:
+    def __yield_tokens(
+        self, data_iter: torchtext.datasets, src: bool = True
+    ) -> Iterator:
         """Function to yield tokens from a dataset.
 
         :param data_iter: the dataset to yield tokens from
@@ -87,7 +97,7 @@ class Tokenizer:
         :rtype: str
         """
 
-        return ' '.join(tokens)
+        return " ".join(tokens)
 
     def string_to_vocab(self, text: str, src: bool = True) -> torch.Tensor:
         """Function to convert text data to vocabulary.
@@ -103,19 +113,23 @@ class Tokenizer:
         if not src:
             tokens = self.tokenize(text, src)
 
-            return torch.cat((
-                torch.tensor([self.special_symbols.index('<bos>')]),
-                torch.tensor(self.__vocab_tgt(tokens)),
-                torch.tensor([self.special_symbols.index('<eos>')])
-            ))
+            return torch.cat(
+                (
+                    torch.tensor([self.special_symbols.index("<bos>")]),
+                    torch.tensor(self.__vocab_tgt(tokens)),
+                    torch.tensor([self.special_symbols.index("<eos>")]),
+                )
+            )
 
         tokens = self.tokenize(text, src)
 
-        return torch.cat((
-            torch.tensor([self.special_symbols.index('<bos>')]),
-            torch.tensor(self.__vocab_src(tokens)),
-            torch.tensor([self.special_symbols.index('<eos>')])
-        ))
+        return torch.cat(
+            (
+                torch.tensor([self.special_symbols.index("<bos>")]),
+                torch.tensor(self.__vocab_src(tokens)),
+                torch.tensor([self.special_symbols.index("<eos>")]),
+            )
+        )
 
     def vocab_to_string(self, vocab: torch.Tensor, src: bool) -> str:
         """Function to convert vocabulary to text data.
@@ -129,10 +143,6 @@ class Tokenizer:
         """
 
         if not src:
-            return self.detokenize(
-                self.__vocab_tgt.lookup_tokens(vocab.tolist())
-            )
+            return self.detokenize(self.__vocab_tgt.lookup_tokens(vocab.tolist()))
 
-        return self.detokenize(
-            self.__vocab_src.lookup_tokens(vocab.tolist())
-        )
+        return self.detokenize(self.__vocab_src.lookup_tokens(vocab.tolist()))

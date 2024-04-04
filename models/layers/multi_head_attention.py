@@ -18,8 +18,6 @@ class MultiHeadAttention(nn.Module):
 
         super().__init__()
 
-        torch.manual_seed(0)
-
         self.__dk = self.__dv = dim_model // num_head
         self.__num_head = num_head
 
@@ -52,12 +50,12 @@ class MultiHeadAttention(nn.Module):
         :return: the output of the calculated attention.
         :rtype: torch.Tensor
         """
-    
+        
         # calculate QW^q, QW^k, QW^v
         q = self.__WQ(q)
         k = self.__WK(k)
         v = self.__WV(v)
-       
+   
         old_shape = q.shape
 
         # reshape from (batch_size, seq_length, dim_model) to (batch_size, num_head, seq_length, dk) to get QW1, QW2 .. Qwhead
@@ -71,10 +69,10 @@ class MultiHeadAttention(nn.Module):
         v = v.reshape(v.shape[0], v.shape[1], self.__num_head, self.__dv).transpose(
             1, 2
         )
-        
+       
         attention_values = self.__attention(q, k, v, pad_mask)
         
         # concat all layer to return to (batch_size, seq_length, dim_model)
         attention_values = attention_values.transpose(1, 2).reshape(old_shape)
-
+        
         return self.__W0(attention_values)
