@@ -60,10 +60,10 @@ class Transformer(nn.Module):
 
         src_mask = (
             (src == 1).unsqueeze(1).unsqueeze(2)
-        ).to(device)  # (bias, n_head, 1, seq_lenght) -> because the dimension of the attention windows
+        ) # (bias, n_head, 1, seq_lenght) -> because the dimension of the attention windows
         tgt_mask = (
             (tgt == 1).unsqueeze(1).unsqueeze(2)
-        ).to(device)  # (bias, n_head, seq_length, seq_lenght)
+        ) # (bias, n_head, seq_length, seq_lenght)
 
         seq_length = tgt.size(1)
         nopeak_mask = (

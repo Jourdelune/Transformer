@@ -23,3 +23,4 @@ You just have to follow these two steps
 `pip install -r requirements.txt`
 
 2. Run the training script: `python3 train.py`
+

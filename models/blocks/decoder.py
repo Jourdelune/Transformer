@@ -70,4 +70,4 @@ class Decoder(nn.Module):
         
         tgt = self.__ffn(tgt)
 
-        return self.__softmax(tgt)
+        return tgt

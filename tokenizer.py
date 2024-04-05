@@ -99,6 +99,22 @@ class Tokenizer:
 
         return " ".join(tokens)
 
+    def create_label(self, target: torch.Tensor) -> torch.Tensor:
+        """Function to create label data for the training process
+
+        :param target: the target text (encoded)
+        :type target: torch.Tensor
+        :return: the label
+        :rtype: torch.Tensor
+        """
+
+        return torch.cat(
+                (
+                    target[1:],
+                    torch.tensor([self.special_symbols.index("<eos>")])
+                )
+            )
+
     def string_to_vocab(self, text: str, src: bool = True) -> torch.Tensor:
         """Function to convert text data to vocabulary.
 
@@ -117,7 +133,6 @@ class Tokenizer:
                 (
                     torch.tensor([self.special_symbols.index("<bos>")]),
                     torch.tensor(self.__vocab_tgt(tokens)),
-                    torch.tensor([self.special_symbols.index("<eos>")]),
                 )
             )
 

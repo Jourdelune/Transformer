@@ -17,7 +17,7 @@ class Embeddings(nn.Module):
         """
 
         super().__init__()
-
+ 
         self.__embeddings = nn.Embedding(vocab_size, dim_model)
         self.__dim_model = torch.tensor(dim_model)
 
@@ -29,5 +29,5 @@ class Embeddings(nn.Module):
         :return: an output of dim (batch_size, max_seq_length, dim_model)
         :rtype: torch.Tensor
         """
-
+  
         return self.__embeddings(inputs) * torch.sqrt(self.__dim_model)
