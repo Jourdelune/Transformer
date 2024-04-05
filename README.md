@@ -24,3 +24,8 @@ You just have to follow these two steps
 
 2. Run the training script: `python3 train.py`
 
+# TODO
+
+- [ ] Implement learning rate scheduler
+- [ ] Add script to run prediction
+- [ ] Use sentencepiece for tokenization
